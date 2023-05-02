@@ -7,6 +7,7 @@ import {
 } from "../../utils/localStorage";
 
 import {
+  clearStoreThunk,
   loginUserThunk,
   registerUserThunk,
   updateUserThunk,
@@ -37,6 +38,7 @@ export const updateUser = createAsyncThunk(
     return updateUserThunk("/auth/updateUser", user, thunkAPI);
   }
 );
+export const clearStore = createAsyncThunk("user/clearStore", clearStoreThunk);
 
 const userSlice = createSlice({
   name: "user",
@@ -48,12 +50,12 @@ const userSlice = createSlice({
     logoutUser: (state, { payload }) => {
       state.user = null;
       state.isSidebarOpen = false;
-      toast.success("Logged out");
       removeUserFromLocalStorage();
       if (payload) {
         toast.success(payload);
       }
     },
+    clearAllJobsState: () => initialState,
   },
   extraReducers: {
     [registerUser.pending]: (state) => {
@@ -98,8 +100,12 @@ const userSlice = createSlice({
       state.isLoading = false;
       toast.error(payload);
     },
+    [clearStore.rejected]: () => {
+      toast.error("There was an error with clearing the store...");
+    },
   },
 });
 
-export const { toggleSidebar, logoutUser } = userSlice.actions;
+export const { toggleSidebar, logoutUser, clearAllJobsState } =
+  userSlice.actions;
 export default userSlice.reducer;
